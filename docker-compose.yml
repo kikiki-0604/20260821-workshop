@@ -1,0 +1,10 @@
+services:
+  workshop:
+    build: .
+    image: ai-workshop:latest
+    stdin_open: true    # docker attach / exec でターミナル操作するために必要
+    tty: true
+    volumes:
+      - ./workspace:/workspace   # このフォルダの中身がコンテナ内 /workspace に見える
+    env_file:
+      - .env             # 各自ここにAPIキーを書く (下の .env.example を参照)
