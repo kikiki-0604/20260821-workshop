@@ -35,6 +35,12 @@ export function GameScreen({ config, onBackToMenu, voice }: GameScreenProps) {
     return () => window.clearTimeout(timer);
   }, [game.moveSeq, game.lastMover]);
 
+  // Stop any in-flight character voice line when leaving this screen (e.g.
+  // "モード選択に戻る" mid-utterance), instead of letting it talk over the menu.
+  // voice.cancel has a stable identity (useVoice memoizes it with no deps),
+  // so capturing it once here and running only on unmount is intentional.
+  useEffect(() => () => voice.cancel(), []);
+
   return (
     <div className="w-full">
       <StatusBar

@@ -10,6 +10,7 @@ import {
 import type { AiWorkerRequest, AiWorkerResponse } from '../logic/aiWorker';
 import type {
   BoardState,
+  CharacterAssignment,
   Difficulty,
   GameConfig,
   GamePhase,
@@ -18,6 +19,13 @@ import type {
   PlayerCharacters,
   Position,
 } from '../types';
+
+function resolveCharacters(assignment: CharacterAssignment, humanColor: Player): PlayerCharacters {
+  if (assignment.mode === 'pvp') return { black: assignment.black, white: assignment.white };
+  return humanColor === 'black'
+    ? { black: assignment.human, white: assignment.ai }
+    : { black: assignment.ai, white: assignment.human };
+}
 
 interface HistorySnapshot {
   board: BoardState;
@@ -39,7 +47,7 @@ interface GameState {
   difficulty: Difficulty;
   humanColor: Player;
   names: GameConfig['names'];
-  characters: PlayerCharacters;
+  characters: CharacterAssignment;
   isThinking: boolean;
   lastMover: Player | null;
   moveSeq: number;
@@ -202,6 +210,11 @@ export function useGame(config: GameConfig) {
     [state.board],
   );
 
+  const characters = useMemo(
+    () => resolveCharacters(state.characters, state.humanColor),
+    [state.characters, state.humanColor],
+  );
+
   const isHumanTurn = state.mode === 'pvp' || state.currentPlayer === state.humanColor;
 
   const workerRef = useRef<Worker | null>(null);
@@ -302,7 +315,7 @@ export function useGame(config: GameConfig) {
     difficulty: state.difficulty,
     humanColor: state.humanColor,
     names: state.names,
-    characters: state.characters,
+    characters,
     isThinking: state.isThinking,
     lastMover: state.lastMover,
     moveSeq: state.moveSeq,

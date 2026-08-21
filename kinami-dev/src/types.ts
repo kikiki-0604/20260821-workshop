@@ -25,12 +25,19 @@ export interface PlayerCharacters {
   white: CharacterId;
 }
 
+// In CPU mode the character follows the human/AI role rather than a fixed
+// color, so swapping sides mid-game keeps the player's chosen character
+// attached to them instead of getting stranded on their old color.
+export type CharacterAssignment =
+  | { mode: 'cpu'; human: CharacterId; ai: CharacterId }
+  | { mode: 'pvp'; black: CharacterId; white: CharacterId };
+
 export interface GameConfig {
   mode: GameMode;
   difficulty: Difficulty;
   humanColor: Player;
   names: PlayerNames;
-  characters: PlayerCharacters;
+  characters: CharacterAssignment;
 }
 
 export type GamePhase = 'playing' | 'passing' | 'gameover';

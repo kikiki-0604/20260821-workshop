@@ -31,7 +31,7 @@ function PopoverButton({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-slate-50 active:scale-95 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
+        className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-fuchsia-50 active:scale-95 dark:bg-indigo-900/70 dark:text-slate-100 dark:hover:bg-indigo-900"
       >
         <span>{icon}</span>
         <span className="hidden sm:inline">{label}</span>
@@ -45,7 +45,7 @@ function PopoverButton({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 z-20 mt-2 w-64 rounded-xl bg-white p-3 shadow-xl ring-1 ring-black/5 dark:bg-slate-800"
+              className="absolute right-0 z-20 mt-2 w-64 rounded-xl bg-white p-3 shadow-xl ring-1 ring-fuchsia-200/60 dark:bg-indigo-950 dark:ring-fuchsia-500/20"
               onClick={(e) => {
                 e.stopPropagation();
                 setOpen(false);
@@ -77,7 +77,7 @@ export function GameControls({
         type="button"
         onClick={onUndo}
         disabled={!canUndo}
-        className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-slate-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
+        className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-fuchsia-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-indigo-900/70 dark:text-slate-100 dark:hover:bg-indigo-900"
       >
         <span>↩️</span>
         <span className="hidden sm:inline">待った</span>
@@ -86,7 +86,7 @@ export function GameControls({
       <button
         type="button"
         onClick={onRestart}
-        className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-slate-50 active:scale-95 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
+        className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-fuchsia-50 active:scale-95 dark:bg-indigo-900/70 dark:text-slate-100 dark:hover:bg-indigo-900"
       >
         <span>🔄</span>
         <span className="hidden sm:inline">新規対局</span>
@@ -95,7 +95,7 @@ export function GameControls({
       <button
         type="button"
         onClick={onBackToMenu}
-        className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-slate-50 active:scale-95 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
+        className="flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow transition hover:bg-fuchsia-50 active:scale-95 dark:bg-indigo-900/70 dark:text-slate-100 dark:hover:bg-indigo-900"
       >
         <span>⬅️</span>
         <span className="hidden sm:inline">モード選択に戻る</span>
