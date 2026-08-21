@@ -1,0 +1,364 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', 'Hiragino Sans', sans-serif;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    max-width: 1400px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* お金表示 */
+.money-display {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.current-money, .total-winnings {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.current-money span:first-child, .total-winnings span:first-child {
+    display: block;
+    font-size: 0.85em;
+    opacity: 0.9;
+    margin-bottom: 4px;
+}
+
+.amount {
+    font-size: 1.4em;
+    display: block;
+}
+
+/* チケット表示 */
+.tickets-display {
+    background: #f0f0f0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.tickets-title {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.tickets-count {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ff6b6b;
+}
+
+/* チケットエリア */
+.ticket-area {
+    background: #2d5016;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    min-height: 200px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.ticket-item {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.lottery-ticket {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border: 3px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    position: relative;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.lottery-ticket:hover:not(.opened) {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.lottery-ticket.opened {
+    background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+    border: 3px solid #666;
+}
+
+.ticket-number {
+    font-size: 0.8em;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.ticket-status {
+    font-size: 0.7em;
+    color: #666;
+    opacity: 0.7;
+}
+
+.ticket-result {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff6b6b;
+    margin-bottom: 4px;
+    display: none;
+}
+
+.lottery-ticket.opened .ticket-result {
+    display: block;
+}
+
+.lottery-ticket.opened .ticket-status {
+    display: none;
+}
+
+.lottery-ticket.won {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+    color: white;
+}
+
+.lottery-ticket.won .ticket-result {
+    color: white;
+}
+
+/* 結果表示 */
+.result-display {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: white;
+    animation: slideIn 0.5s ease;
+}
+
+.result-content {
+    animation: pulse 0.6s ease;
+}
+
+.result-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.result-amount {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.result-message {
+    font-size: 1em;
+    opacity: 0.9;
+}
+
+/* コントロールボタン */
+.controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.btn {
+    padding: 10px 16px;
+    font-size: 0.85em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn span {
+    display: block;
+}
+
+.btn span:first-child {
+    font-size: 0.9em;
+}
+
+.price {
+    font-size: 0.75em;
+    opacity: 0.8;
+}
+
+.btn-buy, .btn-buy-multi, .btn-buy-all {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-draw {
+    background: #ff6b6b;
+    color: white;
+}
+
+.btn-reset {
+    background: #27ae60;
+    color: white;
+}
+
+/* 統計情報 */
+.stats {
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+    background: #f0f0f0;
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 0.85em;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-item span:last-child {
+    display: block;
+    font-weight: bold;
+    color: #ff6b6b;
+    font-size: 1.1em;
+}
+
+/* ルール説明 */
+.rules {
+    background: #f0f0f0;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.rules summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.95em;
+}
+
+.rules summary:hover {
+    color: #ff6b6b;
+}
+
+.rules ul {
+    margin-top: 10px;
+    margin-left: 20px;
+    color: #555;
+    line-height: 1.6;
+    font-size: 0.9em;
+}
+
+.rules li {
+    margin-bottom: 4px;
+}
+
+/* スクロールバー */
+.ticket-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ticket-area::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.ticket-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 10px;
+}
+
+/* アニメーション */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .container {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .money-display {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ticket-item {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}
