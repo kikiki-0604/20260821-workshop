@@ -18,11 +18,19 @@ export interface PlayerNames {
   white: string;
 }
 
+export type CharacterId = 'cat' | 'dog' | 'bird' | 'fish';
+
+export interface PlayerCharacters {
+  black: CharacterId;
+  white: CharacterId;
+}
+
 export interface GameConfig {
   mode: GameMode;
   difficulty: Difficulty;
   humanColor: Player;
   names: PlayerNames;
+  characters: PlayerCharacters;
 }
 
 export type GamePhase = 'playing' | 'passing' | 'gameover';

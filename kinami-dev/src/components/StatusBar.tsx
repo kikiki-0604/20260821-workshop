@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { CharacterAvatar } from '../characters/avatars';
 import { playerLabel } from '../logic/labels';
-import type { GameMode, Player, PlayerNames } from '../types';
+import { SpeechBubble } from './SpeechBubble';
+import type { GameMode, Player, PlayerCharacters, PlayerNames } from '../types';
 
 interface StatusBarProps {
   currentPlayer: Player;
@@ -10,25 +12,41 @@ interface StatusBarProps {
   mode: GameMode;
   names: PlayerNames;
   humanColor: Player;
+  characters: PlayerCharacters;
+  speech: { player: Player; text: string; seq: number } | null;
 }
 
-function ScoreChip({ player, count, active }: { player: Player; count: number; active: boolean }) {
+function PlayerBadge({
+  player,
+  count,
+  active,
+  characterId,
+  speech,
+}: {
+  player: Player;
+  count: number;
+  active: boolean;
+  characterId: PlayerCharacters['black'];
+  speech: { text: string; seq: number } | null;
+}) {
   return (
-    <div
-      className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-all sm:px-4 ${
-        active
-          ? 'bg-white shadow-md ring-2 ring-amber-400 dark:bg-slate-800'
-          : 'bg-white/60 dark:bg-slate-800/60'
-      }`}
-    >
-      <span
-        className={`inline-block h-5 w-5 rounded-full shadow-inner ${
-          player === 'black'
-            ? 'bg-gradient-to-br from-slate-600 to-black'
-            : 'bg-gradient-to-br from-white to-slate-300 ring-1 ring-slate-300'
+    <div className="relative flex flex-col items-center gap-1">
+      <AnimatePresence>
+        {speech && <SpeechBubble key={speech.seq} text={speech.text} />}
+      </AnimatePresence>
+      <div
+        className={`relative rounded-full transition ${
+          active ? 'ring-4 ring-amber-400' : 'ring-2 ring-transparent'
         }`}
-      />
-      <span className="text-lg font-bold tabular-nums text-slate-800 dark:text-slate-100">{count}</span>
+      >
+        <CharacterAvatar id={characterId} size={44} />
+        <span
+          className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full shadow ${
+            player === 'black' ? 'bg-black' : 'bg-white ring-1 ring-slate-300'
+          }`}
+        />
+      </div>
+      <span className="text-sm font-bold tabular-nums text-slate-800 dark:text-slate-100">{count}</span>
     </div>
   );
 }
@@ -41,6 +59,8 @@ export function StatusBar({
   mode,
   names,
   humanColor,
+  characters,
+  speech,
 }: StatusBarProps) {
   const label = playerLabel(currentPlayer, mode, names);
 
@@ -56,8 +76,14 @@ export function StatusBar({
   }
 
   return (
-    <div className="mx-auto mb-4 flex w-full max-w-[560px] items-center justify-between gap-2 sm:mb-6">
-      <ScoreChip player="black" count={blackCount} active={currentPlayer === 'black'} />
+    <div className="mx-auto mb-4 flex w-full max-w-[560px] items-start justify-between gap-2 sm:mb-6">
+      <PlayerBadge
+        player="black"
+        count={blackCount}
+        active={currentPlayer === 'black'}
+        characterId={characters.black}
+        speech={speech?.player === 'black' ? { text: speech.text, seq: speech.seq } : null}
+      />
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -66,7 +92,7 @@ export function StatusBar({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 8 }}
           transition={{ duration: 0.25 }}
-          className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-2 py-2 text-center text-sm font-bold shadow-md sm:text-base ${
+          className={`mt-2 flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-2 py-2 text-center text-sm font-bold shadow-md sm:text-base ${
             currentPlayer === 'black'
               ? 'bg-slate-900 text-white'
               : 'bg-white text-slate-900 ring-1 ring-slate-300'
@@ -79,7 +105,13 @@ export function StatusBar({
         </motion.div>
       </AnimatePresence>
 
-      <ScoreChip player="white" count={whiteCount} active={currentPlayer === 'white'} />
+      <PlayerBadge
+        player="white"
+        count={whiteCount}
+        active={currentPlayer === 'white'}
+        characterId={characters.white}
+        speech={speech?.player === 'white' ? { text: speech.text, seq: speech.seq } : null}
+      />
     </div>
   );
 }

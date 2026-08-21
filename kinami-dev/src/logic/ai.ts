@@ -1,4 +1,5 @@
 import type { BoardState, Difficulty, Player, Position } from '../types';
+import { pickRandom } from '../utils/random';
 import {
   applyMove,
   countDiscs,
@@ -249,7 +250,7 @@ export function chooseAiMove(
   const settings = DIFFICULTY_SETTINGS[difficulty];
 
   if (settings.randomness > 0 && Math.random() < settings.randomness) {
-    return legal[Math.floor(Math.random() * legal.length)];
+    return pickRandom(legal);
   }
 
   const empty = countEmpty(board);

@@ -1,18 +1,25 @@
 import { useState } from 'react';
+import { BgmToggle } from './components/BgmToggle';
 import { DarkModeToggle } from './components/DarkModeToggle';
 import { GameScreen } from './components/GameScreen';
 import { ModeSelector } from './components/ModeSelector';
+import { VoiceToggle } from './components/VoiceToggle';
+import { useBgm } from './hooks/useBgm';
 import { useDarkMode } from './hooks/useDarkMode';
+import { useVoice } from './hooks/useVoice';
 import type { GameConfig } from './types';
 
 export default function App() {
   const { isDark, toggle } = useDarkMode();
+  const bgm = useBgm();
+  const voice = useVoice();
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [gameKey, setGameKey] = useState(0);
 
   const handleStart = (newConfig: GameConfig) => {
     setConfig(newConfig);
     setGameKey((k) => k + 1);
+    bgm.ensureStarted();
   };
 
   const handleBackToMenu = () => setConfig(null);
@@ -26,12 +33,16 @@ export default function App() {
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">本格オセロ対戦</p>
         </div>
-        <DarkModeToggle isDark={isDark} onToggle={toggle} />
+        <div className="flex items-center gap-2">
+          <BgmToggle enabled={bgm.enabled} onToggle={bgm.toggle} />
+          {voice.supported && <VoiceToggle enabled={voice.enabled} onToggle={voice.toggle} />}
+          <DarkModeToggle isDark={isDark} onToggle={toggle} />
+        </div>
       </div>
 
       <div className="mt-6 sm:mt-8">
         {config ? (
-          <GameScreen key={gameKey} config={config} onBackToMenu={handleBackToMenu} />
+          <GameScreen key={gameKey} config={config} onBackToMenu={handleBackToMenu} voice={voice} />
         ) : (
           <ModeSelector onStart={handleStart} />
         )}

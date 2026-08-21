@@ -15,6 +15,7 @@ import type {
   GamePhase,
   GameResult,
   Player,
+  PlayerCharacters,
   Position,
 } from '../types';
 
@@ -38,7 +39,10 @@ interface GameState {
   difficulty: Difficulty;
   humanColor: Player;
   names: GameConfig['names'];
+  characters: PlayerCharacters;
   isThinking: boolean;
+  lastMover: Player | null;
+  moveSeq: number;
 }
 
 type Action =
@@ -87,7 +91,10 @@ function createInitialState(config: GameConfig): GameState {
     difficulty: config.difficulty,
     humanColor: config.humanColor,
     names: config.names,
+    characters: config.characters,
     isThinking: false,
+    lastMover: null,
+    moveSeq: 0,
   };
 }
 
@@ -114,6 +121,8 @@ function reducer(state: GameState, action: Action): GameState {
         lastMove: pos,
         lastFlips: flips,
         history: [...state.history, snapshot],
+        lastMover: player,
+        moveSeq: state.moveSeq + 1,
         ...post,
       };
     }
@@ -134,6 +143,7 @@ function reducer(state: GameState, action: Action): GameState {
         lastMove: null,
         lastFlips: [],
         history: [...state.history, snapshot],
+        lastMover: null,
         ...post,
       };
     }
@@ -155,6 +165,7 @@ function reducer(state: GameState, action: Action): GameState {
         lastFlips: target.lastFlips,
         history: hist,
         isThinking: false,
+        lastMover: null,
         ...post,
       };
     }
@@ -164,6 +175,7 @@ function reducer(state: GameState, action: Action): GameState {
         difficulty: state.difficulty,
         humanColor: state.humanColor,
         names: state.names,
+        characters: state.characters,
       });
     }
     case 'SET_DIFFICULTY':
@@ -290,7 +302,10 @@ export function useGame(config: GameConfig) {
     difficulty: state.difficulty,
     humanColor: state.humanColor,
     names: state.names,
+    characters: state.characters,
     isThinking: state.isThinking,
+    lastMover: state.lastMover,
+    moveSeq: state.moveSeq,
     isHumanTurn,
     blackCount,
     whiteCount,
