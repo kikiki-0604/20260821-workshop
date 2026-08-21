@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🐍 Snake Game</h1>
+    <div class="difficulty-select" id="difficultySelect">
+      <label>難易度:</label>
+      <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+      <button class="difficulty-btn" data-difficulty="normal" data-selected="true">Normal</button>
+      <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+    </div>
+    <div class="info">
+      <div class="score">Score: <span id="score">0</span></div>
+      <div class="high-score">High Score: <span id="highScore">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="powerup-info" id="powerupInfo"></div>
+    <div class="controls">
+      <p id="status">Press SPACE to start</p>
+      <button id="startBtn">Start Game</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div class="instructions">
+      <h3>How to Play:</h3>
+      <ul>
+        <li>Use arrow keys or WASD to move the snake</li>
+        <li>🔴 Red food: +10 points</li>
+        <li>⭐ Star (powerup): Invincible for 5 seconds! +50 points</li>
+        <li>Don't hit the walls or yourself</li>
+        <li>Try to get the highest score!</li>
+      </ul>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
