@@ -16,7 +16,7 @@ export function PassNotice({ player, mode, names }: PassNoticeProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -12, scale: 0.95 }}
       transition={{ duration: 0.25 }}
-      className="mx-auto mb-4 w-full max-w-[560px] rounded-xl bg-amber-100 px-4 py-2 text-center text-sm font-semibold text-amber-900 shadow dark:bg-amber-500/20 dark:text-amber-200"
+      className="mx-auto mb-4 w-full max-w-[720px] rounded-2xl bg-amber-100 px-4 py-2.5 text-center text-sm font-bold text-amber-900 shadow sm:py-3 sm:text-base dark:bg-amber-500/20 dark:text-amber-200"
     >
       {label}は置ける場所がないためパスします
     </motion.div>

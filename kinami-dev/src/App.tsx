@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BackgroundDecor } from './components/BackgroundDecor';
 import { BgmToggle } from './components/BgmToggle';
 import { DarkModeToggle } from './components/DarkModeToggle';
 import { GameScreen } from './components/GameScreen';
@@ -25,22 +26,28 @@ export default function App() {
   const handleBackToMenu = () => setConfig(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-100 via-pink-50 to-sky-100 px-4 py-6 dark:from-indigo-950 dark:via-purple-950 dark:to-indigo-950 sm:py-10">
-      <div className="mx-auto flex w-full max-w-[560px] items-center justify-between">
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,#ffd6ec_0%,#e0c3fc_28%,#c3e9fc_55%,#e0c3fc_80%,#fff3c4_100%)] px-4 py-6 dark:bg-[linear-gradient(135deg,#3b0764_0%,#312e81_35%,#1e1b4b_70%,#4c1d95_100%)] sm:py-10">
+      <BackgroundDecor />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-[760px] items-center justify-between">
         <div>
-          <h1 className="bg-gradient-to-r from-pink-500 via-fuchsia-500 to-orange-400 bg-clip-text text-xl font-extrabold tracking-tight text-transparent sm:text-2xl">
-            Reversi Arena
+          <h1 className="kawaii-outline -rotate-2 font-pop text-3xl leading-none text-transparent sm:text-5xl">
+            <span className="bg-gradient-to-r from-pink-500 via-fuchsia-500 to-orange-400 bg-clip-text">
+              Reversi Arena
+            </span>
           </h1>
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-300">本格オセロ対戦</p>
+          <p className="mt-1.5 inline-block rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-fuchsia-600 shadow sm:text-sm dark:bg-slate-900/60 dark:text-fuchsia-300">
+            本格オセロ対戦
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
           <BgmToggle enabled={bgm.enabled} onToggle={bgm.toggle} />
           {voice.supported && <VoiceToggle enabled={voice.enabled} onToggle={voice.toggle} />}
           <DarkModeToggle isDark={isDark} onToggle={toggle} />
         </div>
       </div>
 
-      <div className="mt-6 sm:mt-8">
+      <div className="relative z-10 mt-8 sm:mt-10">
         {config ? (
           <GameScreen key={gameKey} config={config} onBackToMenu={handleBackToMenu} voice={voice} />
         ) : (

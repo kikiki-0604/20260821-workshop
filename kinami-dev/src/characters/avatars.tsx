@@ -5,7 +5,12 @@ import fishImg from '../assets/characters/fish.jpg';
 import type { CharacterId } from '../types';
 
 interface AvatarProps {
+  /** Fixed pixel size. Ignored when `className` includes width/height utilities. */
   size?: number;
+  /** Extra classes on the circular frame — pass Tailwind size utilities here for responsive avatars. */
+  className?: string;
+  /** Classes controlling the ring/border around the frame. */
+  ringClassName?: string;
 }
 
 interface ImageAvatarConfig {
@@ -24,12 +29,18 @@ const AVATAR_CONFIG: Record<CharacterId, ImageAvatarConfig> = {
   fish: { src: fishImg, alt: 'サカナ', objectPosition: '42% 46%', zoom: 1.4 },
 };
 
-export function CharacterAvatar({ id, size = 56 }: { id: CharacterId } & AvatarProps) {
+export function CharacterAvatar({
+  id,
+  size = 56,
+  className = '',
+  ringClassName = 'ring-4 ring-white dark:ring-slate-900/60',
+}: { id: CharacterId } & AvatarProps) {
   const config = AVATAR_CONFIG[id];
+  const hasSizeClass = /\bh-\d/.test(className) && /\bw-\d/.test(className);
   return (
     <span
-      className="block overflow-hidden rounded-full bg-white shadow-inner ring-2 ring-white/80 dark:ring-slate-900/50"
-      style={{ width: size, height: size }}
+      className={`block overflow-hidden rounded-full bg-white shadow-lg ${ringClassName} ${className}`}
+      style={hasSizeClass ? undefined : { width: size, height: size }}
     >
       <img
         src={config.src}
