@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遅刻した時の言い訳シミュレーター</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'ヒラギノ角ゴ Pro', 'Hiragino Kaku Gothic Pro', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stage-container {
+            display: none;
+        }
+
+        .stage-container.active {
+            display: block;
+        }
+
+        .stage-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stage-info h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stage-progress {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-dot.active {
+            background: white;
+        }
+
+        .character {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .character-avatar {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+
+        .character-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .character-mood {
+            font-size: 20px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .excuses {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .excuse-button {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .excuse-button:hover {
+            background: #e8f0ff;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .excuse-button.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .excuse-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            display: none;
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .probability {
+            margin-bottom: 15px;
+        }
+
+        .probability-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .probability-bar {
+            background: #e0e0e0;
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            transition: width 0.5s ease;
+        }
+
+        .reaction {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 3px solid #764ba2;
+        }
+
+        .reaction-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .reaction-text {
+            color: #666;
+            font-size: 18px;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .score-display {
+            font-size: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .final-score {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .final-score.show {
+            display: block;
+        }
+
+        .final-score h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .final-score-number {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .score-message {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .score-details {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .score-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .score-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .score-detail-row.total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        @keyframes happy-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes angry-shake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-5px); }
+            20% { transform: translateX(5px); }
+            30% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            60% { transform: translateX(5px); }
+            70% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+            90% { transform: translateX(-3px); }
+        }
+
+        @keyframes sad-shrink {
+            0% { transform: scale(1); }
+            100% { transform: scale(0.9); }
+        }
+
+        @keyframes neutral-nod {
+            0%, 100% { transform: rotateX(0deg); }
+            25% { transform: rotateX(-5deg); }
+            75% { transform: rotateX(5deg); }
+        }
+
+        .character-avatar.happy {
+            animation: happy-bounce 0.6s ease-in-out;
+        }
+
+        .character-avatar.angry {
+            animation: angry-shake 0.6s ease-in-out;
+        }
+
+        .character-avatar.sad {
+            animation: sad-shrink 0.6s ease-in-out;
+        }
+
+        .character-avatar.neutral {
+            animation: neutral-nod 0.6s ease-in-out;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .character-avatar {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 遅刻した時の言い訳シミュレーター</h1>
+            <p>正しい言い訳で信じられる確率を上げよう！</p>
+        </div>
+
+        <!-- ステージ1: 親 -->
+        <div class="stage-container active" data-stage="1">
+            <div class="stage-info">
+                <div class="stage-progress">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                <h2>ステージ 1</h2>
+                <p>難易度: ⭐ (簡単)</p>
+            </div>
+
+            <div class="character">
+                <div class="character-avatar">👨‍👩‍👧</div>
+                <div class="character-name">お母さん</div>
+                <div class="character-mood">「どうして遅れてるの？」</div>
+            </div>
+
+            <div class="excuses" id="stage1-excuses"></div>
+
+            <div class="result" id="stage1-result">
+                <div class="result-title">判定結果</div>
+                <div class="probability">
+                    <div class="probability-label">信じられる確率</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="stage1-probability" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div class="reaction">
+                    <div class="reaction-title">お母さんの反応</div>
+                    <div class="reaction-text" id="stage1-reaction"></div>
+                </div>
+                <div class="score-display">ステージスコア: <span id="stage1-score">0</span>/25</div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="game.selectExcuse(1)" id="stage1-btn" disabled>判定する</button>
+            </div>
+        </div>
+
+        <!-- ステージ2: 先生 -->
+        <div class="stage-container" data-stage="2">
+            <div class="stage-info">
+                <div class="stage-progress">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                <h2>ステージ 2</h2>
+                <p>難易度: ⭐⭐ (普通)</p>
+            </div>
+
+            <div class="character">
+                <div class="character-avatar">👩‍🏫</div>
+                <div class="character-name">先生</div>
+                <div class="character-mood">「また遅刻ですか...」</div>
+            </div>
+
+            <div class="excuses" id="stage2-excuses"></div>
+
+            <div class="result" id="stage2-result">
+                <div class="result-title">判定結果</div>
+                <div class="probability">
+                    <div class="probability-label">信じられる確率</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="stage2-probability" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div class="reaction">
+                    <div class="reaction-title">先生の反応</div>
+                    <div class="reaction-text" id="stage2-reaction"></div>
+                </div>
+                <div class="score-display">ステージスコア: <span id="stage2-score">0</span>/25</div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="game.previousStage()">戻る</button>
+                <button class="btn btn-primary" onclick="game.selectExcuse(2)" id="stage2-btn" disabled>判定する</button>
+            </div>
+        </div>
+
+        <!-- ステージ3: 上司 -->
+        <div class="stage-container" data-stage="3">
+            <div class="stage-info">
+                <div class="stage-progress">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                <h2>ステージ 3</h2>
+                <p>難易度: ⭐⭐⭐ (難しい)</p>
+            </div>
+
+            <div class="character">
+                <div class="character-avatar">💼</div>
+                <div class="character-name">厳しい上司</div>
+                <div class="character-mood">「報告書はどうなった？」</div>
+            </div>
+
+            <div class="excuses" id="stage3-excuses"></div>
+
+            <div class="result" id="stage3-result">
+                <div class="result-title">判定結果</div>
+                <div class="probability">
+                    <div class="probability-label">信じられる確率</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="stage3-probability" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div class="reaction">
+                    <div class="reaction-title">上司の反応</div>
+                    <div class="reaction-text" id="stage3-reaction"></div>
+                </div>
+                <div class="score-display">ステージスコア: <span id="stage3-score">0</span>/25</div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="game.previousStage()">戻る</button>
+                <button class="btn btn-primary" onclick="game.selectExcuse(3)" id="stage3-btn" disabled>判定する</button>
+            </div>
+        </div>
+
+        <!-- ステージ4: VIP顧客 -->
+        <div class="stage-container" data-stage="4">
+            <div class="stage-info">
+                <div class="stage-progress">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot active"></div>
+                </div>
+                <h2>ステージ 4</h2>
+                <p>難易度: ⭐⭐⭐⭐ (最難関)</p>
+            </div>
+
+            <div class="character">
+                <div class="character-avatar">👔</div>
+                <div class="character-name">VIP顧客</div>
+                <div class="character-mood">「期待してるんですが...」</div>
+            </div>
+
+            <div class="excuses" id="stage4-excuses"></div>
+
+            <div class="result" id="stage4-result">
+                <div class="result-title">判定結果</div>
+                <div class="probability">
+                    <div class="probability-label">信じられる確率</div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="stage4-probability" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div class="reaction">
+                    <div class="reaction-title">VIP顧客の反応</div>
+                    <div class="reaction-text" id="stage4-reaction"></div>
+                </div>
+                <div class="score-display">ステージスコア: <span id="stage4-score">0</span>/25</div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="game.previousStage()">戻る</button>
+                <button class="btn btn-primary" onclick="game.selectExcuse(4)" id="stage4-btn" disabled>判定する</button>
+            </div>
+        </div>
+
+        <!-- 最終結果 -->
+        <div class="final-score" id="final-score">
+            <h2>ゲーム終了！</h2>
+            <div class="score-box">
+                <div class="final-score-number" id="final-score-number">0</div>
+                <div class="score-message" id="final-score-message"></div>
+            </div>
+
+            <div class="score-details">
+                <div class="score-detail-row">
+                    <span>ステージ 1 (お母さん):</span>
+                    <span id="final-stage1">0</span>
+                </div>
+                <div class="score-detail-row">
+                    <span>ステージ 2 (先生):</span>
+                    <span id="final-stage2">0</span>
+                </div>
+                <div class="score-detail-row">
+                    <span>ステージ 3 (上司):</span>
+                    <span id="final-stage3">0</span>
+                </div>
+                <div class="score-detail-row">
+                    <span>ステージ 4 (VIP顧客):</span>
+                    <span id="final-stage4">0</span>
+                </div>
+                <div class="score-detail-row total">
+                    <span>合計スコア:</span>
+                    <span id="final-total">0</span>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="game.restart()">もう一度プレイする</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const game = {
+            currentStage: 1,
+            scores: {},
+            selectedExcuses: {},
+
+            excusesData: {
+                1: [
+                    { text: "寝坊しちゃった", realism: 85 },
+                    { text: "朝、道に猫がいて思わず遊んでしまった", realism: 40 },
+                    { text: "電車が遅延していた", realism: 80 },
+                    { text: "友人のために献血に行っていた", realism: 60 },
+                    { text: "朝、宇宙人とコンタクトを取っていた", realism: 5 }
+                ],
+                2: [
+                    { text: "図書館で調べ物をしていた", realism: 70 },
+                    { text: "忘れ物を取りに家に戻った", realism: 65 },
+                    { text: "通勤ラッシュに巻き込まれた", realism: 75 },
+                    { text: "友人が具合悪くなったので病院に付き添った", realism: 55 },
+                    { text: "タイムカプセルを掘り出すのに時間がかかった", realism: 10 }
+                ],
+                3: [
+                    { text: "前の会議が長引いた", realism: 90 },
+                    { text: "緊急の電話対応があった", realism: 80 },
+                    { text: "重要なメールが届いて返信対応していた", realism: 75 },
+                    { text: "クライアントから突然の問い合わせ対応", realism: 85 },
+                    { text: "異次元から戻ってくるのに時間がかかった", realism: 1 }
+                ],
+                4: [
+                    { text: "最終確認のため書類をもう一度チェックしていた", realism: 88 },
+                    { text: "移動中にシステムトラブルが発生", realism: 70 },
+                    { text: "ちょうど前のクライアント対応が終わったところ", realism: 92 },
+                    { text: "社内で重要な決定事項の確認が必要だった", realism: 85 },
+                    { text: "別の次元の時間軸にいた", realism: 0 }
+                ]
+            },
+
+            reactions: {
+                1: {
+                    positive: [
+                        "そっか。でもね、あなたはいつもこう。兄弟はこんなことしないのに。",
+                        "まあいいけど。でも親不孝ね。父さんに聞かれたらどうするつもり？",
+                        "承知した。ただし、この家であなたの食事は抜きね。"
+                    ],
+                    negative: [
+                        "ウソ言わないで！あなたはいつもそう。本当に信用ならない。",
+                        "その話、どこで聞いてきたの？もう親として失望しました。",
+                        "あなたなんか、もう子どもじゃないでしょ。なぜこんなことも出来ないの？"
+                    ]
+                },
+                2: {
+                    positive: [
+                        "へぇ、そういう理由ですか。でも、あなただけは遅刻が多いですね。他の生徒は来てますが。",
+                        "了解。ただし、遅刻は成績に反映させるからね。覚えておくように。",
+                        "まあいいでしょう。でも親に連絡させてもらいますからね。"
+                    ],
+                    negative: [
+                        "その言い訳、昨日も聞きましたけど？記憶力まで悪いんですか？",
+                        "呆れました。こんな程度の生徒は見たことない。親の教育が悪いんでしょう。",
+                        "ふざけるな！こういう態度だから、クラスで浮いてるんだ。反省しろ！"
+                    ]
+                },
+                3: {
+                    positive: [
+                        "ふむ...まあ、何とか許してやるか。だが次はこんなことするなよ。給料の価値もない奴めが。",
+                        "へぇ、そうなんだ。でも、俺の若い頃はもっと頑張ってたぞ？今の若者は根性が足らん。",
+                        "まあいい。ただし、この失敗は評価に響く。ボーナスカットだ。覚えておけ。"
+                    ],
+                    negative: [
+                        "ふざけるな！そんな言い訳、子どもでも考えるぞ！仕事する資格ねーな。",
+                        "呆れた。これだから最近の若い奴らは使えんのだ。給料泥棒か？お前はクビだ。",
+                        "そんな言い訳で済むと思ってるのか？責任感がないんだよ。明日から来るな。給料も返しやがれ！",
+                        "生意気だな。二度と遅刻するな。給料から天引きして、精神教育の費用に充てるぞ。",
+                        "馬鹿か！？ こんな言い訳が通用すると思ってんのか？お前なんか左遷だ。田舎に飛ばしてやる。",
+                        "ふざけんな！お前のせいで会社の評判が落ちるんだ。親に報告してやろうか？"
+                    ]
+                },
+                4: {
+                    positive: [
+                        "ふむ。で、それはお前の言い訳か？正直、つまらん。",
+                        "そのようですな。ただし、遅刻は信用低下だ。わかってるのか？",
+                        "まあ良い。だが、もう二度と遅れるな。俺の時間は金なんだ。"
+                    ],
+                    negative: [
+                        "馬鹿じゃないのか？そんな言い訳で契約を続けられると思うのか？",
+                        "失礼だな。お前の会社はこんなレベルか？別の会社に替える。",
+                        "聞く価値もない。契約は打ち切りだ。弁護士から通知がいくから。司法書士に相談しておけ。",
+                        "ふざけるな！俺を舐めるな。お前の社長に直接クレーム入れてやる。首を覚悟しろ。"
+                    ]
+                }
+            },
+
+            init() {
+                this.generateExcuses();
+            },
+
+            generateExcuses() {
+                for (let stage = 1; stage <= 4; stage++) {
+                    const excusesContainer = document.getElementById(`stage${stage}-excuses`);
+                    const excuses = this.excusesData[stage];
+                    const shuffled = [...excuses].sort(() => Math.random() - 0.5);
+
+                    excusesContainer.innerHTML = '';
+                    shuffled.forEach((excuse) => {
+                        const button = document.createElement('button');
+                        button.className = 'excuse-button';
+                        button.textContent = `💬 ${excuse.text}`;
+                        button.onclick = () => this.selectExcuseOption(stage, excuse.text, excuse.realism, button);
+                        excusesContainer.appendChild(button);
+                    });
+                }
+            },
+
+            selectExcuseOption(stage, text, realism, buttonElement) {
+                document.querySelectorAll(`#stage${stage}-excuses .excuse-button`).forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                buttonElement.classList.add('selected');
+                this.selectedExcuses[stage] = { text, realism };
+                document.getElementById(`stage${stage}-btn`).disabled = false;
+            },
+
+            selectExcuse(stage) {
+                if (!this.selectedExcuses[stage]) return;
+
+                const excuse = this.selectedExcuses[stage];
+                const probability = this.calculateProbability(stage, excuse.realism);
+                const score = Math.round(probability / 4);
+
+                this.scores[stage] = score;
+                this.displayResult(stage, probability, excuse.realism);
+            },
+
+            calculateProbability(stage, realism) {
+                const stageDifficulty = [1.0, 0.85, 0.7, 0.55][stage - 1];
+                let probability = realism * stageDifficulty;
+                const randomFactor = (Math.random() - 0.5) * 30;
+                probability += randomFactor;
+                probability = Math.max(0, Math.min(100, probability));
+                return Math.round(probability);
+            },
+
+            displayResult(stage, probability, realism) {
+                const resultElement = document.getElementById(`stage${stage}-result`);
+                const probabilityFill = document.getElementById(`stage${stage}-probability`);
+                const reactionElement = document.getElementById(`stage${stage}-reaction`);
+                const scoreElement = document.getElementById(`stage${stage}-score`);
+                const characterAvatar = document.querySelector(`.stage-container[data-stage="${stage}"] .character-avatar`);
+
+                probabilityFill.style.width = probability + '%';
+                probabilityFill.textContent = probability + '%';
+
+                const isPositive = probability > 50;
+                const reactions = this.reactions[stage][isPositive ? 'positive' : 'negative'];
+                const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+
+                reactionElement.textContent = `「${reaction}」`;
+                scoreElement.textContent = this.scores[stage];
+
+                this.playCharacterAnimation(characterAvatar, isPositive, probability);
+                resultElement.classList.add('show');
+
+                document.querySelectorAll(`#stage${stage}-excuses .excuse-button`).forEach(btn => {
+                    btn.disabled = true;
+                });
+                document.getElementById(`stage${stage}-btn`).disabled = true;
+
+                setTimeout(() => {
+                    if (stage < 4) {
+                        this.showNextStageButton(stage);
+                    } else {
+                        this.showFinalButton();
+                    }
+                }, 2000);
+            },
+
+            playCharacterAnimation(avatar, isPositive, probability) {
+                avatar.classList.remove('happy', 'angry', 'sad', 'neutral');
+
+                if (isPositive) {
+                    if (probability > 75) {
+                        avatar.classList.add('happy');
+                    } else {
+                        avatar.classList.add('neutral');
+                    }
+                } else {
+                    if (probability < 25) {
+                        avatar.classList.add('angry');
+                    } else {
+                        avatar.classList.add('sad');
+                    }
+                }
+
+                setTimeout(() => {
+                    avatar.classList.remove('happy', 'angry', 'sad', 'neutral');
+                }, 600);
+            },
+
+            showNextStageButton(stage) {
+                const buttonsContainer = document.querySelector(`.stage-container[data-stage="${stage}"] .buttons`);
+                const existingNextBtn = buttonsContainer.querySelector('[onclick*="nextStage"]');
+                if (!existingNextBtn) {
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = 'btn btn-primary';
+                    nextBtn.textContent = '次のステージへ →';
+                    nextBtn.onclick = () => this.nextStage();
+                    buttonsContainer.appendChild(nextBtn);
+                }
+            },
+
+            showFinalButton() {
+                const buttonsContainer = document.querySelector(`.stage-container[data-stage="4"] .buttons`);
+                const existingBtn = buttonsContainer.querySelector('[onclick*="showFinalScore"]');
+                if (!existingBtn) {
+                    const finalBtn = document.createElement('button');
+                    finalBtn.className = 'btn btn-primary';
+                    finalBtn.textContent = '最終スコアを見る →';
+                    finalBtn.onclick = () => this.showFinalScore();
+                    buttonsContainer.appendChild(finalBtn);
+                }
+            },
+
+            nextStage() {
+                if (this.currentStage < 4) {
+                    this.currentStage++;
+                    this.hideAllStages();
+                    document.querySelector(`.stage-container[data-stage="${this.currentStage}"]`).classList.add('active');
+                    window.scrollTo(0, 0);
+                }
+            },
+
+            previousStage() {
+                if (this.currentStage > 1) {
+                    this.currentStage--;
+                    this.hideAllStages();
+                    document.querySelector(`.stage-container[data-stage="${this.currentStage}"]`).classList.add('active');
+                    window.scrollTo(0, 0);
+                }
+            },
+
+            hideAllStages() {
+                document.querySelectorAll('.stage-container').forEach(stage => {
+                    stage.classList.remove('active');
+                });
+            },
+
+            showFinalScore() {
+                this.hideAllStages();
+
+                const totalScore = Object.values(this.scores).reduce((a, b) => a + b, 0);
+                const finalScoreContainer = document.getElementById('final-score');
+
+                let message = '';
+                if (totalScore >= 90) {
+                    message = '🎉 完璧な言い訳師！ あなたは全ての状況を乗り越えました！';
+                } else if (totalScore >= 70) {
+                    message = '👏 なかなかやるね。ほとんどの場面で信じてもらえました。';
+                } else if (totalScore >= 50) {
+                    message = '😐 まあまあですね。もう少し練習が必要かも...';
+                } else if (totalScore >= 30) {
+                    message = '😅 ちょっと厳しいですね。言い訳の精度を上げましょう。';
+                } else {
+                    message = '😱 うーん。正直に謝った方がいいかもしれません...';
+                }
+
+                document.getElementById('final-score-number').textContent = totalScore;
+                document.getElementById('final-score-message').textContent = message;
+
+                for (let i = 1; i <= 4; i++) {
+                    document.getElementById(`final-stage${i}`).textContent = this.scores[i] || 0;
+                }
+                document.getElementById('final-total').textContent = totalScore;
+
+                finalScoreContainer.classList.add('show');
+                window.scrollTo(0, 0);
+            },
+
+            restart() {
+                location.reload();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            game.init();
+        });
+    </script>
+</body>
+</html>
