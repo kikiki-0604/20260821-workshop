@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宝くじシミュレーター</title>
+    <link rel="stylesheet" href="lottery.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎰 宝くじシミュレーター 🎰</h1>
+
+        <div class="money-display">
+            <div class="current-money">
+                <span>現在の資金</span>
+                <span class="amount" id="currentMoney">10,000</span>円
+            </div>
+            <div class="total-winnings">
+                <span>累計当選金</span>
+                <span class="amount" id="totalWinnings">0</span>円
+            </div>
+        </div>
+
+        <div class="tickets-display">
+            <div class="tickets-title">購入済みチケット</div>
+            <div class="tickets-count" id="ticketsCount">0枚</div>
+        </div>
+
+        <div class="ticket-area">
+            <div class="ticket-item" id="ticketContainer">
+                <!-- チケットが追加される -->
+            </div>
+        </div>
+
+        <div class="result-display" id="resultDisplay" style="display: none;">
+            <div class="result-content">
+                <div class="result-title" id="resultTitle">ハズレ！</div>
+                <div class="result-amount" id="resultAmount">0円</div>
+                <div class="result-message" id="resultMessage">次に期待！</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="buyBtn" class="btn btn-buy">
+                <span>宝くじを1枚買う</span>
+                <span class="price">100円</span>
+            </button>
+            <button id="buyMultiBtn" class="btn btn-buy-multi">
+                <span>10枚まとめ買い</span>
+                <span class="price">1,000円</span>
+            </button>
+            <button id="buyAllBtn" class="btn btn-buy-all">
+                <span>全て使用</span>
+            </button>
+            <button id="drawBtn" class="btn btn-draw">全て開ける</button>
+            <button id="resetBtn" class="btn btn-reset">リセット</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span>引いた枚数:</span>
+                <span id="drawnCount">0</span>枚
+            </div>
+            <div class="stat-item">
+                <span>当選枚数:</span>
+                <span id="winCount">0</span>枚
+            </div>
+            <div class="stat-item">
+                <span>当選確率:</span>
+                <span id="winRate">0.0%</span>
+            </div>
+        </div>
+
+        <div class="rules">
+            <details>
+                <summary>📋 ルール</summary>
+                <ul>
+                    <li>💰 初期資金：10,000円</li>
+                    <li>🎫 1枚100円で宝くじが買える</li>
+                    <li>🔓 「全て開ける」で同時に結果を確認</li>
+                    <li>🎊 当選確率は低めに設定されています</li>
+                    <li>💸 資金が0円になったらゲームオーバー</li>
+                </ul>
+            </details>
+        </div>
+    </div>
+
+    <script src="lottery.js"></script>
+</body>
+</html>
