@@ -5,7 +5,7 @@ import { CharacterSelector } from './CharacterSelector';
 import { ColorSelector } from './ColorSelector';
 import { DifficultySelector } from './DifficultySelector';
 import { pickRandom } from '../utils/random';
-import type { CharacterId, Difficulty, GameConfig, GameMode, Player, PlayerCharacters } from '../types';
+import type { CharacterAssignment, CharacterId, Difficulty, GameConfig, GameMode, Player } from '../types';
 
 interface ModeSelectorProps {
   onStart: (config: GameConfig) => void;
@@ -26,16 +26,10 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
   const [whiteCharacter, setWhiteCharacter] = useState<CharacterId>('dog');
 
   const handleStart = () => {
-    let characters: PlayerCharacters;
-    if (mode === 'cpu') {
-      const aiCharacter = randomCharacterExcluding(playerCharacter);
-      characters =
-        humanColor === 'black'
-          ? { black: playerCharacter, white: aiCharacter }
-          : { black: aiCharacter, white: playerCharacter };
-    } else {
-      characters = { black: blackCharacter, white: whiteCharacter };
-    }
+    const characters: CharacterAssignment =
+      mode === 'cpu'
+        ? { mode: 'cpu', human: playerCharacter, ai: randomCharacterExcluding(playerCharacter) }
+        : { mode: 'pvp', black: blackCharacter, white: whiteCharacter };
 
     onStart({
       mode,
@@ -54,7 +48,7 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="mx-auto w-full max-w-md rounded-2xl bg-white/90 p-5 shadow-xl backdrop-blur sm:p-7 dark:bg-slate-800/90"
+      className="mx-auto w-full max-w-md rounded-2xl bg-white/90 p-5 shadow-xl ring-1 ring-fuchsia-200/60 backdrop-blur sm:p-7 dark:bg-indigo-950/70 dark:ring-fuchsia-500/20"
     >
       <div className="mb-6 grid grid-cols-2 gap-2">
         <button
@@ -62,7 +56,7 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
           onClick={() => setMode('cpu')}
           className={`rounded-xl border-2 px-3 py-4 text-center font-bold transition active:scale-95 ${
             mode === 'cpu'
-              ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm dark:bg-emerald-500/10 dark:text-emerald-300'
+              ? 'border-fuchsia-500 bg-fuchsia-50 text-fuchsia-800 shadow-sm dark:bg-fuchsia-500/15 dark:text-fuchsia-200'
               : 'border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300'
           }`}
         >
@@ -74,7 +68,7 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
           onClick={() => setMode('pvp')}
           className={`rounded-xl border-2 px-3 py-4 text-center font-bold transition active:scale-95 ${
             mode === 'pvp'
-              ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm dark:bg-emerald-500/10 dark:text-emerald-300'
+              ? 'border-fuchsia-500 bg-fuchsia-50 text-fuchsia-800 shadow-sm dark:bg-fuchsia-500/15 dark:text-fuchsia-200'
               : 'border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300'
           }`}
         >
@@ -118,7 +112,7 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
                 onChange={(e) => setBlackName(e.target.value)}
                 placeholder="黒"
                 maxLength={12}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-fuchsia-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -129,7 +123,7 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
                 onChange={(e) => setWhiteName(e.target.value)}
                 placeholder="白"
                 maxLength={12}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-fuchsia-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
               />
             </div>
           </div>
@@ -139,7 +133,7 @@ export function ModeSelector({ onStart }: ModeSelectorProps) {
       <button
         type="button"
         onClick={handleStart}
-        className="mt-7 w-full rounded-xl bg-emerald-600 px-4 py-3 text-lg font-bold text-white shadow-lg transition hover:bg-emerald-700 active:scale-95"
+        className="mt-7 w-full rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-orange-400 px-4 py-3 text-lg font-bold text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110 active:scale-95"
       >
         ゲームをはじめる
       </button>

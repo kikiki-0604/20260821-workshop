@@ -24,12 +24,14 @@ export function useVoice() {
   const [muted, setMuted] = useState<boolean>(
     () => supported && localStorage.getItem(MUTE_KEY) === 'true',
   );
-  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
+  const jaVoicesRef = useRef<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
     if (!supported) return;
     const load = () => {
-      voicesRef.current = window.speechSynthesis.getVoices();
+      jaVoicesRef.current = window.speechSynthesis
+        .getVoices()
+        .filter((v) => v.lang?.toLowerCase().startsWith('ja'));
     };
     load();
     window.speechSynthesis.addEventListener('voiceschanged', load);
@@ -37,10 +39,14 @@ export function useVoice() {
   }, []);
 
   const pickVoice = useCallback((id: CharacterId): SpeechSynthesisVoice | null => {
-    const jaVoices = voicesRef.current.filter((v) => v.lang?.toLowerCase().startsWith('ja'));
+    const jaVoices = jaVoicesRef.current;
     if (jaVoices.length === 0) return null;
     const index = CHARACTER_IDS.indexOf(id) % jaVoices.length;
     return jaVoices[index];
+  }, []);
+
+  const cancel = useCallback(() => {
+    if (supported) window.speechSynthesis.cancel();
   }, []);
 
   const speak = useCallback(
@@ -68,5 +74,5 @@ export function useVoice() {
     });
   }, []);
 
-  return { enabled: supported && !muted, supported, speak, toggle };
+  return { enabled: supported && !muted, supported, speak, cancel, toggle };
 }

@@ -31,7 +31,7 @@ export function DifficultySelector({ value, onChange, compact = false }: Difficu
             onClick={() => onChange(option.value)}
             className={`rounded-lg border-2 px-3 py-2 text-left transition active:scale-95 ${
               active
-                ? 'border-emerald-500 bg-emerald-50 shadow-sm dark:bg-emerald-500/10'
+                ? 'border-fuchsia-500 bg-fuchsia-50 shadow-sm dark:bg-fuchsia-500/15'
                 : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:hover:border-slate-500'
             }`}
           >
