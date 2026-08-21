@@ -38,7 +38,7 @@ export function Cell({ value, isLegal, isLastMove, interactive, currentPlayer, o
 
       {isLastMove && value && (
         <motion.span
-          className="pointer-events-none absolute inset-[38%] rounded-full ring-2 ring-amber-400"
+          className="pointer-events-none absolute inset-[38%] rounded-full ring-2 ring-fuchsia-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: [0.9, 0.3, 0.9] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
