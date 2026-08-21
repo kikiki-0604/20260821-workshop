@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>言い訳ジェネレータ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        select, button {
+            padding: 12px 16px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        select {
+            background: white;
+            color: #333;
+        }
+
+        select:focus, button:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .result-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            text-align: center;
+        }
+
+        .copy-btn {
+            width: 100%;
+            margin-top: 15px;
+            background: #764ba2;
+        }
+
+        .copy-btn:hover {
+            background: #6a4199;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .difficulty-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .empty-state {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💭 言い訳ジェネレータ</h1>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">ランダム</button>
+            <button class="tab-btn" onclick="switchTab(1)">シナリオ</button>
+            <button class="tab-btn" onclick="switchTab(2)">難易度</button>
+        </div>
+
+        <!-- Tab 1: ランダム組み合わせ型 -->
+        <div class="tab-content active">
+            <div class="controls">
+                <button onclick="generateRandom()">言い訳を生成</button>
+            </div>
+            <div class="result-box" id="randomResult" class="empty-state">
+                ボタンをクリックして言い訳を生成しましょう
+            </div>
+            <button class="copy-btn" onclick="copyToClipboard('randomResult', event)">コピー</button>
+        </div>
+
+        <!-- Tab 2: シナリオベース型 -->
+        <div class="tab-content">
+            <div class="controls">
+                <select id="scenarioSelect" onchange="generateScenario()">
+                    <option value="">状況を選択してください</option>
+                    <option value="late">遅刻</option>
+                    <option value="forgotten">締め切り忘れ</option>
+                    <option value="absent">欠席</option>
+                    <option value="incomplete">未完成</option>
+                    <option value="mistake">ミス</option>
+                    <option value="tired">疲労</option>
+                </select>
+            </div>
+            <div class="result-box" id="scenarioResult" class="empty-state">
+                状況を選択すると言い訳が表示されます
+            </div>
+            <button class="copy-btn" onclick="copyToClipboard('scenarioResult', event)">コピー</button>
+        </div>
+
+        <!-- Tab 3: 難易度選択型 -->
+        <div class="tab-content">
+            <div class="controls">
+                <div class="difficulty-buttons">
+                    <button onclick="generateByDifficulty('weak')">弱い</button>
+                    <button onclick="generateByDifficulty('normal')">中程度</button>
+                    <button onclick="generateByDifficulty('legend')">伝説級</button>
+                </div>
+            </div>
+            <div class="result-box" id="difficultyResult" class="empty-state">
+                難易度を選択して言い訳を生成しましょう
+            </div>
+            <button class="copy-btn" onclick="copyToClipboard('difficultyResult', event)">コピー</button>
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData().then(success => {
+                if (!success) {
+                    alert('データの読み込みに失敗しました');
+                }
+            });
+        });
+
+        function switchTab(index) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            contents.forEach(c => c.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+
+            contents[index].classList.add('active');
+            buttons[index].classList.add('active');
+        }
+
+        function generateRandom() {
+            if (!isDataReady()) {
+                alert('データ読み込み中です。もう一度お試しください');
+                return;
+            }
+
+            const random = excuses.random;
+            const reason = random.reasons[Math.floor(Math.random() * random.reasons.length)];
+            const cause = random.causes[Math.floor(Math.random() * random.causes.length)];
+            const result = random.results[Math.floor(Math.random() * random.results.length)];
+
+            const excuse = `${reason}${cause}、${result}`;
+            document.getElementById('randomResult').textContent = excuse;
+        }
+
+        function generateScenario() {
+            if (!isDataReady()) {
+                alert('データ読み込み中です。もう一度お試しください');
+                return;
+            }
+
+            const select = document.getElementById('scenarioSelect');
+            const scenario = select.value;
+
+            if (!scenario) {
+                document.getElementById('scenarioResult').className = 'result-box empty-state';
+                document.getElementById('scenarioResult').textContent = '状況を選択すると言い訳が表示されます';
+                return;
+            }
+
+            const excuseList = excuses.scenarios?.[scenario];
+            if (!excuseList) {
+                console.error('Scenario not found:', scenario);
+                return;
+            }
+
+            const excuse = excuseList[Math.floor(Math.random() * excuseList.length)];
+
+            document.getElementById('scenarioResult').className = 'result-box';
+            document.getElementById('scenarioResult').textContent = excuse;
+        }
+
+        function generateByDifficulty(difficulty) {
+            if (!isDataReady()) {
+                alert('データ読み込み中です。もう一度お試しください');
+                return;
+            }
+
+            const excuseList = excuses.difficulty?.[difficulty];
+            if (!excuseList) {
+                console.error('Difficulty level not found:', difficulty);
+                return;
+            }
+
+            const excuse = excuseList[Math.floor(Math.random() * excuseList.length)];
+
+            document.getElementById('difficultyResult').className = 'result-box';
+            document.getElementById('difficultyResult').textContent = excuse;
+        }
+
+        function copyToClipboard(elementId, event) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+
+            if (text.includes('選択') || text.includes('生成') || text.includes('表示')) {
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                if (event && event.target) {
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = 'コピーしました！';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
